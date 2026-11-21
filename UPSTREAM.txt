@@ -1,0 +1,12 @@
+FoldDeck upstream record
+
+Based on: DroidDeck by the DroidDeck contributors
+Source:   https://github.com/Droid-Deck/DroidDeck
+Version:  0.7.1
+Commit:   6af598b25e9a6b5ce371b43e534a6e2cc10c64a6 (2026-11-21)
+
+FoldDeck version history
+1.0.0  first FoldDeck build, from DroidDeck 0.7.1 (6af598b)
+
+To take a newer DroidDeck: press "Sync fork" on GitHub (or merge upstream/main),
+then update Version and Commit above and bump FoldDeck's versionName by 0.0.1 in app/build.gradle.

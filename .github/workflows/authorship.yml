@@ -24,6 +24,8 @@ permissions:
 jobs:
   validate:
     name: Validate source and build result
+    # FoldDeck: upstream-only validation (authorship policy and their build bookkeeping).
+    if: github.repository == 'Droid-Deck/DroidDeck'
     runs-on: ubuntu-24.04
     timeout-minutes: 70
     steps:
