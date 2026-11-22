@@ -230,6 +230,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback, com.droidde
     private var unfoldedDeckPanel by mutableStateOf<com.droiddeck.launcher.input.DeckPanel?>(null)
     private var deckPanelLayouts: Map<com.droiddeck.launcher.input.DeckPanel, com.droiddeck.launcher.input.SavedInputLayout?> = emptyMap()
     private lateinit var sessionRoot: FrameLayout
+    private val flexPosture by lazy { com.droiddeck.launcher.session.FlexPosture(this) { uiHandler.post { applyUnfoldedControls() } } }
     private var inputRouter: InputRouter? = null
     private var physicalInputBindings: com.droiddeck.launcher.input.PhysicalInputBindings? = null
     private var inputSettingsOpen by mutableStateOf(false)
@@ -4606,8 +4607,13 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback, com.droidde
         updateOnScreenControls()
     }
 
+    private fun flexHinge(): Int? =
+        flexPosture.hingeTop?.takeIf { com.droiddeck.launcher.session.FlexPosture.enabled(this) && !(pipUi || isInPictureInPictureMode) &&
+            SessionState.mode == SessionService.MODE_STEAM && SessionPrefs.builtinPad(this) }
+
     private fun controlsBelowWanted(): Boolean {
         if (!::sessionRoot.isInitialized || glassesScreen != null || bottomGame != null || cardboard.enabled) return false
+        if (flexHinge() != null) return true
         return SessionPrefs.controlsBelowWanted(this, SessionState.mode, rootContentWidth(), rootContentHeight(),
             pipUi || isInPictureInPictureMode)
     }
@@ -4620,7 +4626,10 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback, com.droidde
         val tabRow = unfoldedColumn?.getChildAt(0)?.height?.let {
             it - (com.droiddeck.launcher.ui.BAR_HEIGHT.value * resources.displayMetrics.density + 0.5f).toInt()
         } ?: 0
-        val gameHeight = if (wanted) com.droiddeck.launcher.session.SessionDisplay.unfoldedGameHeight(width, height, tabRow)
+        val hinge = flexHinge()
+        val rootTop = IntArray(2).also { sessionRoot.getLocationInWindow(it) }[1]
+        val gameHeight = if (wanted && hinge != null) com.droiddeck.launcher.session.FlexPosture.gameHeight(hinge, rootTop, height, tabRow)
+            else if (wanted) com.droiddeck.launcher.session.SessionDisplay.unfoldedGameHeight(width, height, tabRow)
             else FrameLayout.LayoutParams.MATCH_PARENT
         val params = surfaceView.layoutParams as FrameLayout.LayoutParams
         if (params.height != gameHeight) {
@@ -5829,6 +5838,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback, com.droidde
         if (secondScreenMode != SecondScreenMode.NONE && secondScreenPresentation == null) showSecondScreen(secondScreenMode)
         else openDualScreenControls()
         startedScreens++
+        flexPosture.start()
         SessionService.setActivityVisible(this, true, sessionActivityDisplayId)
         Glasses.rescan()
         updateGlassesScreen()
@@ -5839,6 +5849,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback, com.droidde
     override fun onStop() {
         if (runtimeRemovalBlocked) { super.onStop(); return }
         started = false
+        flexPosture.stop()
         if (::hud.isInitialized) hud.setBackgrounded(true)
         updateHandCamera()
         displayManager.unregisterDisplayListener(displayListener)

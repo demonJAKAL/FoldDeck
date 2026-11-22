@@ -1,3 +1,5 @@
+> **FoldDeck** is a personal fork of DroidDeck for the Galaxy Z Fold 7. See [FOLDDECK.md](FOLDDECK.md) for what it changes and [UPSTREAM.txt](UPSTREAM.txt) for the DroidDeck version it is based on. Everything below is DroidDeck's own README.
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="artwork/droiddeck-banner-dark.svg">

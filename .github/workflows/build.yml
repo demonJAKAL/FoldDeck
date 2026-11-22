@@ -368,6 +368,8 @@ jobs:
           submodules: recursive
 
       - name: Check human authorship
+        # FoldDeck: upstream's contribution policy; this fork is maintained with AI help, so it only runs upstream.
+        if: github.repository == 'Droid-Deck/DroidDeck'
         env:
           EVENT_NAME: ${{ github.event_name }}
           BEFORE: ${{ github.event.before }}
@@ -923,7 +925,7 @@ jobs:
 
   sign:
     needs: [build, checks]
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.repository == 'Droid-Deck/DroidDeck' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
       actions: read
@@ -935,7 +937,7 @@ jobs:
 
   scan:
     needs: sign
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.repository == 'Droid-Deck/DroidDeck' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
     uses: ./.github/workflows/scan.yml
@@ -946,7 +948,7 @@ jobs:
 
   packs:
     needs: [build, checks]
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.repository == 'Droid-Deck/DroidDeck' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
       actions: read
@@ -955,7 +957,7 @@ jobs:
 
   announce:
     needs: [build, sign, packs]
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.repository == 'Droid-Deck/DroidDeck' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
