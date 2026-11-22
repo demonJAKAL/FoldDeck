@@ -236,6 +236,8 @@ android {
             maxParallelForks = 2
             def logTarget = providers.systemProperty('robolectric.logging').orNull
             if (logTarget != null) systemProperty 'robolectric.logging', logTarget
+            // FoldDeck: fetch Robolectric's Android jars from Google's Maven Central copy (Maven Central returns 429 to CI).
+            systemProperty 'robolectric.dependency.repo.url', 'https://maven-central.storage-download.googleapis.com/maven2'
         }
     }
 
