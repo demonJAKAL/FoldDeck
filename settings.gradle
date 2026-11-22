@@ -9,6 +9,8 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
+        // FoldDeck: Google's copy of Maven Central first, because Maven Central rate-limits CI runners (HTTP 429).
+        maven { url 'https://maven-central.storage-download.googleapis.com/maven2/' }
         mavenCentral()
         maven { url 'https://jitpack.io' }
     }
